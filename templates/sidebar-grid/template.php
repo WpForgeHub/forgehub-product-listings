@@ -12,8 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once dirname( __DIR__ ) . '/parts/helpers.php';
 
-$categories  = wpfh_pl_get_product_categories( $products );
-$total_count = count( $products );
+$wpfh_pl_prods       = isset( $products ) && is_array( $products ) ? $products : array();
+$wpfh_pl_categories  = wpfh_pl_get_product_categories( $wpfh_pl_prods );
+$wpfh_pl_total_count = count( $wpfh_pl_prods );
 ?>
 <div class="wpfh-pl-wrapper wpfh-pl-sidebar-grid" data-template="sidebar-grid" data-default-view="grid">
 	<div class="wpfh-pl-layout">
@@ -31,14 +32,14 @@ $total_count = count( $products );
 						<li class="wpfh-pl-cat-item">
 							<button type="button" class="wpfh-pl-cat-btn is-active" data-cat="all">
 								<span class="wpfh-pl-cat-name"><?php esc_html_e( 'All Products', 'forgehub-product-listings' ); ?></span>
-								<span class="wpfh-pl-cat-badge"><?php echo (int) $total_count; ?></span>
+								<span class="wpfh-pl-cat-badge"><?php echo (int) $wpfh_pl_total_count; ?></span>
 							</button>
 						</li>
-						<?php foreach ( $categories as $cslug => $cinfo ) : ?>
+						<?php foreach ( $wpfh_pl_categories as $wpfh_pl_cslug => $wpfh_pl_cinfo ) : ?>
 							<li class="wpfh-pl-cat-item">
-								<button type="button" class="wpfh-pl-cat-btn" data-cat="<?php echo esc_attr( $cslug ); ?>">
-									<span class="wpfh-pl-cat-name"><?php echo esc_html( $cinfo['name'] ); ?></span>
-									<span class="wpfh-pl-cat-badge"><?php echo (int) $cinfo['count']; ?></span>
+								<button type="button" class="wpfh-pl-cat-btn" data-cat="<?php echo esc_attr( $wpfh_pl_cslug ); ?>">
+									<span class="wpfh-pl-cat-name"><?php echo esc_html( $wpfh_pl_cinfo['name'] ); ?></span>
+									<span class="wpfh-pl-cat-badge"><?php echo (int) $wpfh_pl_cinfo['count']; ?></span>
 								</button>
 							</li>
 						<?php endforeach; ?>
@@ -50,13 +51,13 @@ $total_count = count( $products );
 		<!-- Main Content Area -->
 		<main class="wpfh-pl-main">
 			<?php
-			$show_categories = false; // Categories are already in the sidebar
+			$wpfh_pl_show_categories = false; // Categories are already in the sidebar
 			include dirname( __DIR__ ) . '/parts/toolbar.php';
 			?>
 
 			<div class="wpfh-pl-grid-container">
 				<ul class="wpfh-pl-items wpfh-pl-view-grid">
-					<?php foreach ( $products as $product ) : ?>
+					<?php foreach ( $wpfh_pl_prods as $wpfh_pl_prod ) : ?>
 						<?php include dirname( __DIR__ ) . '/parts/card.php'; ?>
 					<?php endforeach; ?>
 				</ul>

@@ -1,0 +1,21 @@
+# Copyright (C) 2026 WPForgeHub
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: ForgeHub Product Listings 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wpforgehub.com/support/\n"
+"POT-Creation-Date: 2026-11-17T16:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
+"Last-Translator: WPForgeHub <support@wpforgehub.com>\n"
+"Language-Team: WPForgeHub <support@wpforgehub.com>\n"
+"X-Generator: WPForgeHub Translation Tool\n"
+"X-Domain: forgehub-product-listings\n"
+
+msgid "ForgeHub Product Listings"
+msgstr ""
+
+msgid "Choose a ready-made layout for your plugin catalog, shop and category pages, and assign a template per page."
+msgstr ""

@@ -41,3 +41,58 @@ if ( ! function_exists( 'wpfh_pl_get_product_categories' ) ) {
 		return $categories;
 	}
 }
+
+if ( ! function_exists( 'wpfh_pl_allowed_svg_tags' ) ) {
+	function wpfh_pl_allowed_svg_tags() {
+		return array(
+			'svg'      => array(
+				'class'        => true,
+				'aria-hidden'  => true,
+				'aria-label'   => true,
+				'role'         => true,
+				'viewbox'      => true,
+				'width'        => true,
+				'height'       => true,
+				'fill'         => true,
+				'stroke'       => true,
+				'stroke-width' => true,
+				'xmlns'        => true,
+			),
+			'path'     => array(
+				'd'            => true,
+				'fill'         => true,
+				'stroke'       => true,
+				'stroke-width' => true,
+			),
+			'rect'     => array(
+				'x'      => true,
+				'y'      => true,
+				'width'  => true,
+				'height' => true,
+				'rx'     => true,
+				'ry'     => true,
+				'fill'   => true,
+				'stroke' => true,
+			),
+			'circle'   => array(
+				'cx'     => true,
+				'cy'     => true,
+				'r'      => true,
+				'fill'   => true,
+				'stroke' => true,
+			),
+			'line'     => array(
+				'x1'     => true,
+				'y1'     => true,
+				'x2'     => true,
+				'y2'     => true,
+				'stroke' => true,
+			),
+			'polyline' => array(
+				'points' => true,
+				'fill'   => true,
+				'stroke' => true,
+			),
+		);
+	}
+}

@@ -14,6 +14,9 @@ class WPFH_PL_Pro_Category_Templates {
 	const META = 'wpfh_pl_template';
 
 	public static function init() {
+		if ( function_exists( 'wpfh_pl_fs' ) && ! wpfh_pl_fs()->can_use_premium_code() ) {
+			return;
+		}
 		add_action( 'product_cat_edit_form_fields', array( __CLASS__, 'field' ) );
 		add_action( 'edited_product_cat', array( __CLASS__, 'save' ) );
 		add_filter( 'wpfh_pl_template_slug', array( __CLASS__, 'filter' ) );

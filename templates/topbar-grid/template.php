@@ -12,18 +12,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once dirname( __DIR__ ) . '/parts/helpers.php';
 
-$categories  = wpfh_pl_get_product_categories( $products );
-$total_count = count( $products );
+$wpfh_pl_prods       = isset( $products ) && is_array( $products ) ? $products : array();
+$wpfh_pl_categories  = wpfh_pl_get_product_categories( $wpfh_pl_prods );
+$wpfh_pl_total_count = count( $wpfh_pl_prods );
 ?>
 <div class="wpfh-pl-wrapper wpfh-pl-topbar-grid" data-template="topbar-grid" data-default-view="grid">
 	<?php
-	$show_categories = true; // Show pill chips in the toolbar
+	$wpfh_pl_show_categories = true; // Show pill chips in the toolbar
 	include dirname( __DIR__ ) . '/parts/toolbar.php';
 	?>
 
 	<div class="wpfh-pl-grid-container">
 		<ul class="wpfh-pl-items wpfh-pl-view-grid">
-			<?php foreach ( $products as $product ) : ?>
+			<?php foreach ( $wpfh_pl_prods as $wpfh_pl_prod ) : ?>
 				<?php include dirname( __DIR__ ) . '/parts/card.php'; ?>
 			<?php endforeach; ?>
 		</ul>

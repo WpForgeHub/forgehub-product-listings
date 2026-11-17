@@ -1,6 +1,0 @@
-tests/
-*.py
-*.zip
-.env
-credentials*
-*.html

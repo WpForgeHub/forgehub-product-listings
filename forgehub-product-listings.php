@@ -23,6 +23,59 @@ define( 'WPFH_PL_FILE', __FILE__ );
 define( 'WPFH_PL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPFH_PL_URL', plugin_dir_url( __FILE__ ) );
 
+/**
+ * Freemius SDK helper wrapper
+ */
+if ( ! function_exists( 'wpfh_pl_fs' ) ) {
+	function wpfh_pl_fs() {
+		global $wpfh_pl_fs;
+
+		if ( ! isset( $wpfh_pl_fs ) ) {
+			$fs_path = WPFH_PL_PATH . 'freemius/start.php';
+			if ( file_exists( $fs_path ) ) {
+				require_once $fs_path;
+				$wpfh_pl_fs = fs_dynamic_init( array(
+					'id'             => '45298',
+					'slug'           => 'forgehub-product-listings',
+					'type'           => 'plugin',
+					'public_key'     => 'pk_69a50c0ad07134126cbc83fd6a56f',
+					'is_premium'     => false,
+					'has_addons'     => false,
+					'has_paid_plans' => true,
+					'menu'           => array(
+						'slug'       => 'forgehub-product-listings',
+						'first-path' => 'options-general.php?page=forgehub-product-listings',
+						'parent'     => array(
+							'slug' => 'options-general.php',
+						),
+					),
+				) );
+			} else {
+				// Clean fallback for standard WordPress distribution
+				$wpfh_pl_fs = new class {
+					public function can_use_premium_code() {
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+						return (bool) apply_filters( 'fs_can_use_premium_code__forgehub-product-listings', false );
+					}
+					public function is__premium_only() { return false; }
+					public function is_plan( $plan ) {
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+						return (bool) apply_filters( 'fs_is_plan__forgehub-product-listings', false, $plan );
+					}
+					public function get_upgrade_url() {
+						return 'https://wpforgehub.com/plugins/forgehub-product-listings/';
+					}
+				};
+			}
+		}
+
+		return $wpfh_pl_fs;
+	}
+
+	// Init Freemius.
+	wpfh_pl_fs();
+}
+
 require_once WPFH_PL_PATH . 'includes/class-wpfh-pl-templates.php';
 require_once WPFH_PL_PATH . 'includes/class-wpfh-pl-admin.php';
 require_once WPFH_PL_PATH . 'includes/class-wpfh-pl-frontend.php';

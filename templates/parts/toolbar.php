@@ -1,7 +1,7 @@
 <?php
 /**
  * Shared filter toolbar part for product listing templates.
- * Expects $categories (array: slug => ['name' => ..., 'count' => ...]), $show_categories (bool).
+ * Expects $wpfh_pl_categories (array: slug => ['name' => ..., 'count' => ...]), $wpfh_pl_show_categories (bool).
  *
  * @package forgehub-product-listings
  */
@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$show_categories = isset( $show_categories ) ? (bool) $show_categories : true;
-$categories      = isset( $categories ) ? $categories : array();
+$wpfh_pl_show_categories = isset( $wpfh_pl_show_categories ) ? (bool) $wpfh_pl_show_categories : ( isset( $show_categories ) ? (bool) $show_categories : true );
+$wpfh_pl_categories      = isset( $wpfh_pl_categories ) ? $wpfh_pl_categories : ( isset( $categories ) ? $categories : array() );
 ?>
 <div class="wpfh-pl-toolbar" role="region" aria-label="<?php esc_attr_e( 'Product listing controls', 'forgehub-product-listings' ); ?>">
 	<div class="wpfh-pl-toolbar-row wpfh-pl-toolbar-primary">
@@ -53,16 +53,16 @@ $categories      = isset( $categories ) ? $categories : array();
 		</div>
 	</div>
 
-	<?php if ( $show_categories && ! empty( $categories ) ) : ?>
+	<?php if ( $wpfh_pl_show_categories && ! empty( $wpfh_pl_categories ) ) : ?>
 	<div class="wpfh-pl-toolbar-row wpfh-pl-category-chips" role="group" aria-label="<?php esc_attr_e( 'Filter by category', 'forgehub-product-listings' ); ?>">
 		<button type="button" class="wpfh-pl-chip is-active" data-cat="all">
 			<?php esc_html_e( 'All Categories', 'forgehub-product-listings' ); ?>
 		</button>
-		<?php foreach ( $categories as $cslug => $cinfo ) : ?>
-			<button type="button" class="wpfh-pl-chip" data-cat="<?php echo esc_attr( $cslug ); ?>">
-				<?php echo esc_html( $cinfo['name'] ); ?>
-				<?php if ( isset( $cinfo['count'] ) ) : ?>
-					<span class="wpfh-pl-chip-count">(<?php echo (int) $cinfo['count']; ?>)</span>
+		<?php foreach ( $wpfh_pl_categories as $wpfh_pl_cslug => $wpfh_pl_cinfo ) : ?>
+			<button type="button" class="wpfh-pl-chip" data-cat="<?php echo esc_attr( $wpfh_pl_cslug ); ?>">
+				<?php echo esc_html( $wpfh_pl_cinfo['name'] ); ?>
+				<?php if ( isset( $wpfh_pl_cinfo['count'] ) ) : ?>
+					<span class="wpfh-pl-chip-count">(<?php echo (int) $wpfh_pl_cinfo['count']; ?>)</span>
 				<?php endif; ?>
 			</button>
 		<?php endforeach; ?>

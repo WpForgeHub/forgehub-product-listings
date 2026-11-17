@@ -12,11 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once dirname( __DIR__ ) . '/parts/helpers.php';
 
-$categories  = wpfh_pl_get_product_categories( $products );
-$total_count = count( $products );
+$wpfh_pl_prods       = isset( $products ) && is_array( $products ) ? $products : array();
+$wpfh_pl_categories  = wpfh_pl_get_product_categories( $wpfh_pl_prods );
+$wpfh_pl_total_count = count( $wpfh_pl_prods );
 
 // Helpful category descriptions and icons
-$cat_meta = array(
+$wpfh_pl_cat_meta = array(
 	'all' => array(
 		'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
 		'desc' => __( 'Browse our complete catalog of ultra-lightweight plugins.', 'forgehub-product-listings' ),
@@ -49,32 +50,33 @@ $cat_meta = array(
 		<div class="wpfh-pl-cat-boxes-grid">
 			<div class="wpfh-pl-cat-box is-active" data-cat="all">
 				<div class="wpfh-pl-cat-box-icon">
-					<?php echo $cat_meta['all']['icon']; ?>
+					<?php echo wp_kses( $wpfh_pl_cat_meta['all']['icon'], wpfh_pl_allowed_svg_tags() ); ?>
 				</div>
 				<div class="wpfh-pl-cat-box-content">
 					<div class="wpfh-pl-cat-box-top">
 						<h4 class="wpfh-pl-cat-box-title"><?php esc_html_e( 'All Plugins', 'forgehub-product-listings' ); ?></h4>
-						<span class="wpfh-pl-cat-box-count"><?php echo (int) $total_count; ?></span>
+						<span class="wpfh-pl-cat-box-count"><?php echo (int) $wpfh_pl_total_count; ?></span>
 					</div>
-					<p class="wpfh-pl-cat-box-desc"><?php echo esc_html( $cat_meta['all']['desc'] ); ?></p>
+					<p class="wpfh-pl-cat-box-desc"><?php echo esc_html( $wpfh_pl_cat_meta['all']['desc'] ); ?></p>
 				</div>
 			</div>
-			<?php foreach ( $categories as $cslug => $cinfo ) :
-				$meta = isset( $cat_meta[ $cslug ] ) ? $cat_meta[ $cslug ] : array(
+			<?php foreach ( $wpfh_pl_categories as $wpfh_pl_cslug => $wpfh_pl_cinfo ) :
+				$wpfh_pl_meta = isset( $wpfh_pl_cat_meta[ $wpfh_pl_cslug ] ) ? $wpfh_pl_cat_meta[ $wpfh_pl_cslug ] : array(
 					'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>',
-					'desc' => sprintf( __( 'Explore %s solutions designed for speed and security.', 'forgehub-product-listings' ), $cinfo['name'] ),
+					// translators: %s: category name.
+					'desc' => sprintf( __( 'Explore %s solutions designed for speed and security.', 'forgehub-product-listings' ), $wpfh_pl_cinfo['name'] ),
 				);
 			?>
-				<div class="wpfh-pl-cat-box" data-cat="<?php echo esc_attr( $cslug ); ?>">
+				<div class="wpfh-pl-cat-box" data-cat="<?php echo esc_attr( $wpfh_pl_cslug ); ?>">
 					<div class="wpfh-pl-cat-box-icon">
-						<?php echo $meta['icon']; ?>
+						<?php echo wp_kses( $wpfh_pl_meta['icon'], wpfh_pl_allowed_svg_tags() ); ?>
 					</div>
 					<div class="wpfh-pl-cat-box-content">
 						<div class="wpfh-pl-cat-box-top">
-							<h4 class="wpfh-pl-cat-box-title"><?php echo esc_html( $cinfo['name'] ); ?></h4>
-							<span class="wpfh-pl-cat-box-count"><?php echo (int) $cinfo['count']; ?></span>
+							<h4 class="wpfh-pl-cat-box-title"><?php echo esc_html( $wpfh_pl_cinfo['name'] ); ?></h4>
+							<span class="wpfh-pl-cat-box-count"><?php echo (int) $wpfh_pl_cinfo['count']; ?></span>
 						</div>
-						<p class="wpfh-pl-cat-box-desc"><?php echo esc_html( $meta['desc'] ); ?></p>
+						<p class="wpfh-pl-cat-box-desc"><?php echo esc_html( $wpfh_pl_meta['desc'] ); ?></p>
 					</div>
 				</div>
 			<?php endforeach; ?>
@@ -82,13 +84,13 @@ $cat_meta = array(
 	</div>
 
 	<?php
-	$show_categories = false; // Category boxes handle category filtering
+	$wpfh_pl_show_categories = false; // Category boxes handle category filtering
 	include dirname( __DIR__ ) . '/parts/toolbar.php';
 	?>
 
 	<div class="wpfh-pl-grid-container">
 		<ul class="wpfh-pl-items wpfh-pl-view-list">
-			<?php foreach ( $products as $product ) : ?>
+			<?php foreach ( $wpfh_pl_prods as $wpfh_pl_prod ) : ?>
 				<?php include dirname( __DIR__ ) . '/parts/card.php'; ?>
 			<?php endforeach; ?>
 		</ul>
