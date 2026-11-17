@@ -1,0 +1,6 @@
+.wpfh-pl-cards{display:flex;flex-wrap:wrap;gap:16px}
+.wpfh-pl-card{display:block;position:relative;width:240px;background:#fff;border:2px solid #c3c4c7;border-radius:8px;padding:8px;cursor:pointer;color:#1d2327}
+.wpfh-pl-card img{display:block;width:100%;height:auto;border-radius:4px}
+.wpfh-pl-card span{display:block;margin-top:6px;font-weight:600}
+.wpfh-pl-card:has(input:checked){border-color:#2271b1;box-shadow:0 0 0 1px #2271b1}
+.wpfh-pl-card input{position:absolute;opacity:0}
