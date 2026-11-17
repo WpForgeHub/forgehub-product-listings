@@ -43,6 +43,7 @@ class WPFH_PL_Frontend {
 		if ( ! isset( $all[ $slug ] ) ) {
 			$slug = $assignments[ self::context() ];
 		}
+		$slug = apply_filters( 'wpfh_pl_template_slug', $slug, $atts );
 		$file = WPFH_PL_PATH . 'templates/' . $slug . '/template.php';
 		if ( ! file_exists( $file ) || ! function_exists( 'wc_get_products' ) ) {
 			return '';

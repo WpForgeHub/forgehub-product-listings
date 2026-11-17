@@ -8,3 +8,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+require_once __DIR__ . '/freemius.php';
+require_once __DIR__ . '/class-wpfh-pl-pro-category-templates.php';
+WPFH_PL_Pro_Category_Templates::init();
