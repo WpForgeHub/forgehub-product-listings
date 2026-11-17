@@ -16,8 +16,23 @@ class WPFH_PL_Frontend {
 		add_shortcode( 'wpfh_product_listing', array( __CLASS__, 'render_shortcode' ) );
 		add_shortcode( 'forgehub_listing', array( __CLASS__, 'render_shortcode' ) );
 
+		add_action( 'widgets_init', array( __CLASS__, 'register_sidebars' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'assets' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'archive_override' ) );
+	}
+
+	public static function register_sidebars() {
+		register_sidebar(
+			array(
+				'name'          => __( 'ForgeHub Product Listings Sidebar', 'forgehub-product-listings' ),
+				'id'            => 'wpfh-pl-sidebar',
+				'description'   => __( 'Widgets placed here will appear in the Product Listings sidebar.', 'forgehub-product-listings' ),
+				'before_widget' => '<div id="%1$s" class="wpfh-pl-widget %2$s">',
+				'after_widget'  => '</div>',
+				'before_title'  => '<h3 class="wpfh-pl-widget-title">',
+				'after_title'   => '</h3>',
+			)
+		);
 	}
 
 	public static function assets() {
@@ -80,9 +95,15 @@ class WPFH_PL_Frontend {
 
 		$atts = shortcode_atts(
 			array(
-				'template' => '',
-				'limit'    => 100,
-				'category' => '',
+				'template'         => '',
+				'limit'            => 100,
+				'category'         => '',
+				'columns'          => '',
+				'sidebar_position' => '',
+				'container_width'  => '',
+				'sidebar_width'    => '',
+				'widgets'          => '',
+				'recent_count'     => '',
 			),
 			$atts,
 			'forgehub_listing'
@@ -115,7 +136,8 @@ class WPFH_PL_Frontend {
 			$query_args['category'] = array_map( 'trim', explode( ',', $atts['category'] ) );
 		}
 
-		$products = wc_get_products( $query_args );
+		$products       = wc_get_products( $query_args );
+		$wpfh_pl_layout = WPFH_PL_Templates::get_layout_config( $atts );
 
 		ob_start();
 		include $file;

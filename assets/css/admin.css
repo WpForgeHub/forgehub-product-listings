@@ -1,6 +1,95 @@
-.wpfh-pl-cards{display:flex;flex-wrap:wrap;gap:16px}
-.wpfh-pl-card{display:block;position:relative;width:240px;background:#fff;border:2px solid #c3c4c7;border-radius:8px;padding:8px;cursor:pointer;color:#1d2327}
-.wpfh-pl-card img{display:block;width:100%;height:auto;border-radius:4px}
-.wpfh-pl-card span{display:block;margin-top:6px;font-weight:600}
-.wpfh-pl-card:has(input:checked){border-color:#2271b1;box-shadow:0 0 0 1px #2271b1}
-.wpfh-pl-card input{position:absolute;opacity:0}
+.wpfh-pl-admin-wrap {
+	max-width: 1100px;
+}
+.wpfh-pl-section {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	padding: 20px 24px;
+	margin: 20px 0;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.wpfh-pl-section-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	margin: 0 0 16px 0;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #f0f0f1;
+}
+.wpfh-pl-ctx-title {
+	font-size: 1rem;
+	font-weight: 600;
+	margin: 16px 0 10px 0;
+	color: #1d2327;
+}
+.wpfh-pl-cards {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+.wpfh-pl-card {
+	display: block;
+	position: relative;
+	width: 240px;
+	background: #f6f7f7;
+	border: 2px solid #c3c4c7;
+	border-radius: 8px;
+	padding: 10px;
+	cursor: pointer;
+	color: #1d2327;
+	transition: all 0.2s ease;
+}
+.wpfh-pl-card:hover {
+	border-color: #2271b1;
+	transform: translateY(-2px);
+}
+.wpfh-pl-card img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 4px;
+	background: #0f172a;
+}
+.wpfh-pl-card span {
+	display: block;
+	margin-top: 8px;
+	font-weight: 600;
+	font-size: 0.9375rem;
+}
+.wpfh-pl-card:has(input:checked) {
+	border-color: #2271b1;
+	background: #f0f6fc;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+.wpfh-pl-card input {
+	position: absolute;
+	opacity: 0;
+}
+.wpfh-pl-widget-checklist {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin: 12px 0;
+	padding: 0;
+	border: none;
+}
+.wpfh-pl-widget-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	padding: 8px 14px;
+	cursor: pointer;
+	font-size: 0.9375rem;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+.wpfh-pl-widget-item:hover {
+	background: #f0f0f1;
+	border-color: #c3c4c7;
+}
+.wpfh-pl-widget-item input:checked + span {
+	color: #135e96;
+}

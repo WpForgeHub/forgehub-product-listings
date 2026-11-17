@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: ForgeHub Product Listings 1.0.0\n"
+"Project-Id-Version: ForgeHub Product Listings 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wpforgehub.com/support/\n"
 "POT-Creation-Date: 2026-11-17T16:00:00+00:00\n"
 "MIME-Version: 1.0\n"

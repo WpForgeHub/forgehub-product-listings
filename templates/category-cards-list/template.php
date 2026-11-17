@@ -43,8 +43,14 @@ $wpfh_pl_cat_meta = array(
 		'desc' => __( 'High-conversion checkout, customer portals, and licensing bridges.', 'forgehub-product-listings' ),
 	),
 );
+$wpfh_pl_layout = isset( $wpfh_pl_layout ) && is_array( $wpfh_pl_layout ) ? $wpfh_pl_layout : WPFH_PL_Templates::default_settings();
+$wpfh_pl_cw     = isset( $wpfh_pl_layout['container_width'] ) ? $wpfh_pl_layout['container_width'] : '1400px';
+$wpfh_pl_wrapper_style = sprintf(
+	'--wpfh-pl-container-width:%s;',
+	( 'full' === $wpfh_pl_cw ? '100%' : esc_attr( $wpfh_pl_cw ) )
+);
 ?>
-<div class="wpfh-pl-wrapper wpfh-pl-category-cards-list" data-template="category-cards-list" data-default-view="list">
+<div class="wpfh-pl-wrapper wpfh-pl-category-cards-list" data-template="category-cards-list" data-default-view="list" style="<?php echo esc_attr( $wpfh_pl_wrapper_style ); ?>">
 	<!-- Category Boxes Section -->
 	<div class="wpfh-pl-cat-boxes-section">
 		<div class="wpfh-pl-cat-boxes-grid">

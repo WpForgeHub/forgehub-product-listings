@@ -1,5 +1,5 @@
 /**
- * ForgeHub Product Listings - Live Search, Filter, Sort and View Switcher
+ * ForgeHub Product Listings - Live Search, Filter, Sort, Price Brackets, and View Switcher
  * Pure vanilla JavaScript. Zero CDN dependencies.
  */
 (function() {
@@ -15,9 +15,10 @@
 	}
 
 	function setupListingInstance(wrapper) {
-		var searchInput    = wrapper.querySelector('.wpfh-pl-search-input');
-		var searchClear    = wrapper.querySelector('.wpfh-pl-search-clear');
+		var searchInputs   = wrapper.querySelectorAll('.wpfh-pl-search-input');
+		var searchClears   = wrapper.querySelectorAll('.wpfh-pl-search-clear');
 		var editionBtns    = wrapper.querySelectorAll('.wpfh-pl-edition-btn');
+		var priceBtns      = wrapper.querySelectorAll('.wpfh-pl-price-btn');
 		var sortSelect     = wrapper.querySelector('.wpfh-pl-sort-select');
 		var viewBtns       = wrapper.querySelectorAll('.wpfh-pl-view-btn');
 		var itemsContainer = wrapper.querySelector('.wpfh-pl-items');
@@ -35,6 +36,7 @@
 			search: '',
 			category: 'all',
 			edition: 'all',
+			priceRange: 'all',
 			sort: 'title-asc',
 			view: wrapper.dataset.defaultView || 'grid'
 		};
@@ -45,6 +47,7 @@
 			if (params.has('pl_search')) state.search = params.get('pl_search').trim();
 			if (params.has('pl_cat')) state.category = params.get('pl_cat').trim();
 			if (params.has('pl_edition')) state.edition = params.get('pl_edition').trim();
+			if (params.has('pl_price')) state.priceRange = params.get('pl_price').trim();
 			if (params.has('pl_sort')) state.sort = params.get('pl_sort').trim();
 			if (params.has('pl_view')) state.view = params.get('pl_view').trim();
 		}
@@ -55,6 +58,7 @@
 			if (state.search) params.set('pl_search', state.search); else params.delete('pl_search');
 			if (state.category && state.category !== 'all') params.set('pl_cat', state.category); else params.delete('pl_cat');
 			if (state.edition && state.edition !== 'all') params.set('pl_edition', state.edition); else params.delete('pl_edition');
+			if (state.priceRange && state.priceRange !== 'all') params.set('pl_price', state.priceRange); else params.delete('pl_price');
 			if (state.sort && state.sort !== 'title-asc') params.set('pl_sort', state.sort); else params.delete('pl_sort');
 			if (state.view && state.view !== (wrapper.dataset.defaultView || 'grid')) params.set('pl_view', state.view); else params.delete('pl_view');
 
@@ -64,13 +68,21 @@
 
 		// Sync UI control states with current state
 		function syncUi() {
-			if (searchInput) {
-				searchInput.value = state.search;
-				if (searchClear) searchClear.style.display = state.search ? 'block' : 'none';
-			}
+			searchInputs.forEach(function(input) {
+				input.value = state.search;
+			});
+			searchClears.forEach(function(clear) {
+				clear.style.display = state.search ? 'block' : 'none';
+			});
 
 			editionBtns.forEach(function(btn) {
 				var isActive = btn.dataset.edition === state.edition;
+				btn.classList.toggle('is-active', isActive);
+				btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+			});
+
+			priceBtns.forEach(function(btn) {
+				var isActive = btn.dataset.priceRange === state.priceRange;
 				btn.classList.toggle('is-active', isActive);
 				btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 			});
@@ -105,12 +117,26 @@
 				var excerpt = (card.querySelector('.wpfh-pl-card-excerpt') ? card.querySelector('.wpfh-pl-card-excerpt').innerText : '').toLowerCase();
 				var cats = (card.dataset.cats || '').split(' ');
 				var edition = card.dataset.edition || 'all';
+				var cardPrice = parseFloat(card.dataset.price) || 0;
 
 				var matchesSearch = !query || title.indexOf(query) !== -1 || excerpt.indexOf(query) !== -1;
 				var matchesCat = state.category === 'all' || cats.indexOf(state.category) !== -1;
 				var matchesEdition = state.edition === 'all' || edition === state.edition || edition === 'all';
 
-				if (matchesSearch && matchesCat && matchesEdition) {
+				var matchesPrice = true;
+				if (state.priceRange && state.priceRange !== 'all') {
+					if (state.priceRange === 'free') {
+						matchesPrice = (cardPrice === 0);
+					} else if (state.priceRange === 'under-20') {
+						matchesPrice = (cardPrice > 0 && cardPrice <= 20);
+					} else if (state.priceRange === '20-50') {
+						matchesPrice = (cardPrice > 20 && cardPrice <= 50);
+					} else if (state.priceRange === '50-plus') {
+						matchesPrice = (cardPrice > 50);
+					}
+				}
+
+				if (matchesSearch && matchesCat && matchesEdition && matchesPrice) {
 					card.style.display = '';
 					visibleCount++;
 				} else {
@@ -153,7 +179,7 @@
 			}
 
 			// Reset filters button
-			var isFiltered = state.search || state.category !== 'all' || state.edition !== 'all';
+			var isFiltered = state.search || state.category !== 'all' || state.edition !== 'all' || state.priceRange !== 'all';
 			if (resetBtn) {
 				resetBtn.style.display = isFiltered ? 'inline-block' : 'none';
 			}
@@ -162,33 +188,53 @@
 		}
 
 		// Event: Live Search with debounce
-		if (searchInput) {
-			var debounceTimer;
-			searchInput.addEventListener('input', function() {
+		var debounceTimer;
+		searchInputs.forEach(function(input) {
+			input.addEventListener('input', function() {
 				clearTimeout(debounceTimer);
 				debounceTimer = setTimeout(function() {
-					state.search = searchInput.value.trim();
-					if (searchClear) searchClear.style.display = state.search ? 'block' : 'none';
+					state.search = input.value.trim();
+					searchInputs.forEach(function(other) {
+						if (other !== input) other.value = state.search;
+					});
+					searchClears.forEach(function(clear) {
+						clear.style.display = state.search ? 'block' : 'none';
+					});
 					applyFilters();
 				}, 150);
 			});
-		}
+		});
 
-		if (searchClear) {
-			searchClear.addEventListener('click', function() {
+		searchClears.forEach(function(clear) {
+			clear.addEventListener('click', function() {
 				state.search = '';
-				searchInput.value = '';
-				searchClear.style.display = 'none';
-				searchInput.focus();
+				searchInputs.forEach(function(input) {
+					input.value = '';
+				});
+				searchClears.forEach(function(c) {
+					c.style.display = 'none';
+				});
+				if (searchInputs.length) searchInputs[0].focus();
 				applyFilters();
 			});
-		}
+		});
 
 		// Event: Edition buttons
 		editionBtns.forEach(function(btn) {
 			btn.addEventListener('click', function() {
 				state.edition = btn.dataset.edition || 'all';
 				editionBtns.forEach(function(b) {
+					b.classList.toggle('is-active', b === btn);
+				});
+				applyFilters();
+			});
+		});
+
+		// Event: Price filter buttons
+		priceBtns.forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				state.priceRange = btn.dataset.priceRange || 'all';
+				priceBtns.forEach(function(b) {
 					b.classList.toggle('is-active', b === btn);
 				});
 				applyFilters();
@@ -219,36 +265,32 @@
 		// Event: Category selection (sidebar items, toolbar chips, category boxes)
 		wrapper.addEventListener('click', function(e) {
 			var catTarget = e.target.closest('.wpfh-pl-cat-btn, .wpfh-pl-chip, .wpfh-pl-cat-box');
-			if (catTarget && catTarget.dataset.cat) {
-				e.preventDefault();
-				state.category = catTarget.dataset.cat;
-				catBtns.forEach(function(b) {
-					b.classList.toggle('is-active', b.dataset.cat === state.category);
-				});
-				applyFilters();
-			}
+			if (!catTarget) return;
+
+			var chosenCat = catTarget.dataset.cat || 'all';
+			state.category = chosenCat;
+
+			catBtns.forEach(function(btn) {
+				btn.classList.toggle('is-active', btn.dataset.cat === chosenCat);
+			});
+
+			applyFilters();
 		});
 
-		// Event: Reset filters
+		// Event: Reset filters button
 		if (resetBtn) {
 			resetBtn.addEventListener('click', function() {
 				state.search = '';
 				state.category = 'all';
 				state.edition = 'all';
+				state.priceRange = 'all';
 				state.sort = 'title-asc';
 				syncUi();
 				applyFilters();
 			});
 		}
 
-		// Browser history popstate
-		window.addEventListener('popstate', function() {
-			readUrlParams();
-			syncUi();
-			applyFilters();
-		});
-
-		// Initial run
+		// Initial setup
 		readUrlParams();
 		syncUi();
 		applyFilters();

@@ -1,6 +1,6 @@
 <?php
 /**
- * Settings screen: template picker cards and per-page assignment.
+ * Settings screen: template picker cards, layout controls, and modular sidebar widgets.
  *
  * @package forgehub-product-listings
  */
@@ -37,6 +37,16 @@ class WPFH_PL_Admin {
 				'default'           => array(),
 			)
 		);
+
+		register_setting(
+			'wpfh_pl_group',
+			WPFH_PL_Templates::SETTINGS_OPTION,
+			array(
+				'type'              => 'array',
+				'sanitize_callback' => array( 'WPFH_PL_Templates', 'sanitize_settings' ),
+				'default'           => WPFH_PL_Templates::default_settings(),
+			)
+		);
 	}
 
 	public static function assets( $hook ) {
@@ -53,22 +63,146 @@ class WPFH_PL_Admin {
 		}
 		$templates   = WPFH_PL_Templates::all();
 		$assignments = WPFH_PL_Templates::assignments();
-		echo '<div class="wrap wpfh-pl"><h1>' . esc_html__( 'ForgeHub Product Listings', 'forgehub-product-listings' ) . '</h1>';
-		echo '<form method="post" action="options.php">';
-		settings_fields( 'wpfh_pl_group' );
-		foreach ( WPFH_PL_Templates::contexts() as $ctx => $ctx_label ) {
-			echo '<h2>' . esc_html( $ctx_label ) . '</h2><div class="wpfh-pl-cards" role="radiogroup">';
-			foreach ( $templates as $slug => $label ) {
-				$id      = 'wpfh-pl-' . $ctx . '-' . $slug;
-				$preview = WPFH_PL_URL . 'assets/img/preview-' . $slug . '.svg';
-				echo '<label class="wpfh-pl-card" for="' . esc_attr( $id ) . '">';
-				echo '<input type="radio" id="' . esc_attr( $id ) . '" name="' . esc_attr( WPFH_PL_Templates::OPTION . '[' . $ctx . ']' ) . '" value="' . esc_attr( $slug ) . '"' . checked( $assignments[ $ctx ], $slug, false ) . ' />';
-				echo '<img src="' . esc_url( $preview ) . '" alt="' . esc_attr( $label ) . '" width="240" height="150" />';
-				echo '<span>' . esc_html( $label ) . '</span></label>';
-			}
-			echo '</div>';
-		}
-		submit_button();
-		echo '</form></div>';
+		$settings    = WPFH_PL_Templates::get_settings();
+
+		$col_opts      = WPFH_PL_Templates::column_options();
+		$pos_opts      = WPFH_PL_Templates::sidebar_position_options();
+		$cw_opts       = WPFH_PL_Templates::container_width_options();
+		$sw_opts       = WPFH_PL_Templates::sidebar_width_options();
+		$avail_widgets = WPFH_PL_Templates::available_sidebar_widgets();
+		$active_w      = isset( $settings['sidebar_widgets'] ) && is_array( $settings['sidebar_widgets'] ) ? $settings['sidebar_widgets'] : array();
+		?>
+		<div class="wrap wpfh-pl-admin-wrap">
+			<h1><?php esc_html_e( 'ForgeHub Product Listings', 'forgehub-product-listings' ); ?></h1>
+			<p class="description">
+				<?php esc_html_e( 'Configure WooCommerce catalog templates, sidebar positions, responsive grid columns, container width, and modular widgets.', 'forgehub-product-listings' ); ?>
+			</p>
+
+			<form method="post" action="options.php">
+				<?php settings_fields( 'wpfh_pl_group' ); ?>
+
+				<!-- Section 1: Template Selection -->
+				<div class="wpfh-pl-section">
+					<h2 class="wpfh-pl-section-title"><?php esc_html_e( 'Template Assignments', 'forgehub-product-listings' ); ?></h2>
+					<?php foreach ( WPFH_PL_Templates::contexts() as $ctx => $ctx_label ) : ?>
+						<h3 class="wpfh-pl-ctx-title"><?php echo esc_html( $ctx_label ); ?></h3>
+						<div class="wpfh-pl-cards" role="radiogroup">
+							<?php
+							foreach ( $templates as $slug => $label ) :
+								$id      = 'wpfh-pl-' . $ctx . '-' . $slug;
+								$preview = WPFH_PL_URL . 'assets/img/preview-' . $slug . '.svg';
+								?>
+								<label class="wpfh-pl-card" for="<?php echo esc_attr( $id ); ?>">
+									<input type="radio" id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( WPFH_PL_Templates::OPTION . '[' . $ctx . ']' ); ?>" value="<?php echo esc_attr( $slug ); ?>"<?php checked( $assignments[ $ctx ], $slug ); ?> />
+									<img src="<?php echo esc_url( $preview ); ?>" alt="<?php echo esc_attr( $label ); ?>" width="240" height="150" />
+									<span><?php echo esc_html( $label ); ?></span>
+								</label>
+							<?php endforeach; ?>
+						</div>
+					<?php endforeach; ?>
+				</div>
+
+				<!-- Section 2: Layout & Appearance Settings -->
+				<div class="wpfh-pl-section">
+					<h2 class="wpfh-pl-section-title"><?php esc_html_e( 'Layout & Appearance Options', 'forgehub-product-listings' ); ?></h2>
+					<table class="form-table" role="presentation">
+						<tbody>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-sidebar-pos"><?php esc_html_e( 'Sidebar Position', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<select id="wpfh-pl-sidebar-pos" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[sidebar_position]' ); ?>">
+										<?php foreach ( $pos_opts as $pval => $plabel ) : ?>
+											<option value="<?php echo esc_attr( $pval ); ?>"<?php selected( $settings['sidebar_position'], $pval ); ?>>
+												<?php echo esc_html( $plabel ); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Choose whether the sidebar is placed on the left or right side of the product grid.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-grid-cols"><?php esc_html_e( 'Grid Columns', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<select id="wpfh-pl-grid-cols" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[grid_columns]' ); ?>">
+										<?php foreach ( $col_opts as $cval => $clabel ) : ?>
+											<option value="<?php echo esc_attr( $cval ); ?>"<?php selected( $settings['grid_columns'], $cval ); ?>>
+												<?php echo esc_html( $clabel ); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Number of product columns on desktop displays. Responsively adapts on mobile and tablet.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-container-width"><?php esc_html_e( 'Container Max Width', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<select id="wpfh-pl-container-width" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[container_width]' ); ?>">
+										<?php foreach ( $cw_opts as $cwval => $cwlabel ) : ?>
+											<option value="<?php echo esc_attr( $cwval ); ?>"<?php selected( $settings['container_width'], $cwval ); ?>>
+												<?php echo esc_html( $cwlabel ); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Controls the overall width of the listings container. Wide (1400px) gives comfortable space for sidebar + 3/4 columns.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-sidebar-width"><?php esc_html_e( 'Sidebar Width', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<select id="wpfh-pl-sidebar-width" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[sidebar_width]' ); ?>">
+										<?php foreach ( $sw_opts as $swval => $swlabel ) : ?>
+											<option value="<?php echo esc_attr( $swval ); ?>"<?php selected( $settings['sidebar_width'], $swval ); ?>>
+												<?php echo esc_html( $swlabel ); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Width dedicated to the sidebar. 280px is recommended for compact readability.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Section 3: Modular Sidebar Widgets -->
+				<div class="wpfh-pl-section">
+					<h2 class="wpfh-pl-section-title"><?php esc_html_e( 'Modular Sidebar Widgets', 'forgehub-product-listings' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Select which widgets should appear in the template sidebar. Active widgets are displayed in order.', 'forgehub-product-listings' ); ?></p>
+					<fieldset class="wpfh-pl-widget-checklist">
+						<legend class="screen-reader-text"><?php esc_html_e( 'Sidebar Widgets', 'forgehub-product-listings' ); ?></legend>
+						<?php foreach ( $avail_widgets as $w_key => $w_label ) : ?>
+							<label class="wpfh-pl-widget-item">
+								<input type="checkbox" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[sidebar_widgets][]' ); ?>" value="<?php echo esc_attr( $w_key ); ?>"<?php checked( in_array( $w_key, $active_w, true ) ); ?> />
+								<span><strong><?php echo esc_html( $w_label ); ?></strong></span>
+							</label>
+						<?php endforeach; ?>
+					</fieldset>
+
+					<table class="form-table" role="presentation" style="margin-top: 1rem;">
+						<tbody>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-recent-count"><?php esc_html_e( 'Recent Products Count', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<input type="number" id="wpfh-pl-recent-count" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[recent_count]' ); ?>" value="<?php echo esc_attr( (string) $settings['recent_count'] ); ?>" min="1" max="12" step="1" class="small-text" />
+									<p class="description"><?php esc_html_e( 'Number of items shown in the "Recent Products" sidebar widget.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<?php submit_button(); ?>
+			</form>
+		</div>
+		<?php
 	}
 }
