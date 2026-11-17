@@ -93,3 +93,30 @@
 .wpfh-pl-widget-item input:checked + span {
 	color: #135e96;
 }
+.wpfh-pl-element-checklist {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin: 8px 0;
+	padding: 0;
+	border: none;
+}
+.wpfh-pl-element-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	padding: 8px 14px;
+	cursor: pointer;
+	font-size: 0.9375rem;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+.wpfh-pl-element-item:hover {
+	background: #f0f0f1;
+	border-color: #c3c4c7;
+}
+.wpfh-pl-element-item input:checked + span {
+	color: #135e96;
+}

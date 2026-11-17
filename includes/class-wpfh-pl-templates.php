@@ -112,18 +112,68 @@ class WPFH_PL_Templates {
 	}
 
 	/**
+	 * Card layout style options.
+	 *
+	 * @return array
+	 */
+	public static function card_layout_options() {
+		return array(
+			'vertical'   => __( 'Vertical Card (Standard)', 'forgehub-product-listings' ),
+			'horizontal' => __( 'Horizontal Card (Image on Left, Sleek & Low Height)', 'forgehub-product-listings' ),
+			'compact'    => __( 'Compact Card (Condensed Footprint)', 'forgehub-product-listings' ),
+		);
+	}
+
+	/**
+	 * Thumbnail aspect ratio options.
+	 *
+	 * @return array
+	 */
+	public static function image_ratio_options() {
+		return array(
+			'16:9'   => __( '16:9 (Standard Banner)', 'forgehub-product-listings' ),
+			'21:9'   => __( '21:9 (Ultra-wide / Slim - Shortest Height)', 'forgehub-product-listings' ),
+			'4:3'    => __( '4:3 (Traditional)', 'forgehub-product-listings' ),
+			'1:1'    => __( '1:1 (Square)', 'forgehub-product-listings' ),
+			'hidden' => __( 'Hidden (No Image)', 'forgehub-product-listings' ),
+		);
+	}
+
+	/**
+	 * Available card elements for granular visibility control.
+	 *
+	 * @return array
+	 */
+	public static function available_card_elements() {
+		return array(
+			'image'      => __( 'Product Image / Thumbnail', 'forgehub-product-listings' ),
+			'badge'      => __( 'Free / Pro Edition Badge', 'forgehub-product-listings' ),
+			'categories' => __( 'Category Tags', 'forgehub-product-listings' ),
+			'title'      => __( 'Product Title', 'forgehub-product-listings' ),
+			'excerpt'    => __( 'Short Description / Excerpt', 'forgehub-product-listings' ),
+			'price'      => __( 'Price / Free Indicator', 'forgehub-product-listings' ),
+			'button'     => __( 'Action Button (View Details)', 'forgehub-product-listings' ),
+		);
+	}
+
+	/**
 	 * Default settings array.
 	 *
 	 * @return array
 	 */
 	public static function default_settings() {
 		return array(
-			'grid_columns'     => '3',
-			'sidebar_position' => 'left',
-			'container_width'  => '1400px',
-			'sidebar_width'    => '280px',
-			'sidebar_widgets'  => array( 'search', 'categories', 'recent', 'price' ),
-			'recent_count'     => 4,
+			'grid_columns'        => '3',
+			'sidebar_position'    => 'left',
+			'container_width'     => '1400px',
+			'sidebar_width'       => '280px',
+			'sidebar_widgets'     => array( 'search', 'categories', 'recent', 'price' ),
+			'recent_count'        => 4,
+			'card_layout'         => 'vertical',
+			'card_image_ratio'    => '16:9',
+			'card_excerpt_length' => 12,
+			'card_button_text'    => __( 'View Details', 'forgehub-product-listings' ),
+			'card_elements'       => array( 'image', 'badge', 'categories', 'title', 'excerpt', 'price', 'button' ),
 		);
 	}
 
@@ -139,7 +189,7 @@ class WPFH_PL_Templates {
 
 		$output = array();
 		foreach ( $defaults as $key => $default_val ) {
-			if ( 'sidebar_widgets' === $key ) {
+			if ( 'sidebar_widgets' === $key || 'card_elements' === $key ) {
 				$output[ $key ] = ( isset( $saved[ $key ] ) && is_array( $saved[ $key ] ) ) ? $saved[ $key ] : $default_val;
 			} elseif ( isset( $saved[ $key ] ) ) {
 				$output[ $key ] = $saved[ $key ];
@@ -233,6 +283,37 @@ class WPFH_PL_Templates {
 		$raw_rc = isset( $input['recent_count'] ) ? absint( $input['recent_count'] ) : $defaults['recent_count'];
 		$out['recent_count'] = ( $raw_rc >= 1 && $raw_rc <= 12 ) ? $raw_rc : $defaults['recent_count'];
 
+		// Card layout style
+		$layout_allowed     = array_keys( self::card_layout_options() );
+		$raw_card_layout    = isset( $input['card_layout'] ) ? sanitize_key( (string) $input['card_layout'] ) : $defaults['card_layout'];
+		$out['card_layout'] = in_array( $raw_card_layout, $layout_allowed, true ) ? $raw_card_layout : $defaults['card_layout'];
+
+		// Thumbnail image ratio
+		$ratio_allowed         = array_keys( self::image_ratio_options() );
+		$raw_ratio             = isset( $input['card_image_ratio'] ) ? sanitize_text_field( (string) $input['card_image_ratio'] ) : $defaults['card_image_ratio'];
+		$out['card_image_ratio'] = in_array( $raw_ratio, $ratio_allowed, true ) ? $raw_ratio : $defaults['card_image_ratio'];
+
+		// Excerpt length (0 to 50 words)
+		$raw_el = isset( $input['card_excerpt_length'] ) ? absint( $input['card_excerpt_length'] ) : $defaults['card_excerpt_length'];
+		$out['card_excerpt_length'] = ( $raw_el >= 0 && $raw_el <= 50 ) ? $raw_el : $defaults['card_excerpt_length'];
+
+		// Action button text
+		$raw_btn = isset( $input['card_button_text'] ) ? sanitize_text_field( (string) $input['card_button_text'] ) : $defaults['card_button_text'];
+		$out['card_button_text'] = ! empty( $raw_btn ) ? substr( $raw_btn, 0, 50 ) : $defaults['card_button_text'];
+
+		// Card elements checklist
+		$valid_elements = array_keys( self::available_card_elements() );
+		$out_elements   = array();
+		if ( isset( $input['card_elements'] ) && is_array( $input['card_elements'] ) ) {
+			foreach ( $input['card_elements'] as $el ) {
+				$clean_el = sanitize_key( $el );
+				if ( in_array( $clean_el, $valid_elements, true ) && ! in_array( $clean_el, $out_elements, true ) ) {
+					$out_elements[] = $clean_el;
+				}
+			}
+		}
+		$out['card_elements'] = ! empty( $out_elements ) ? $out_elements : $defaults['card_elements'];
+
 		return $out;
 	}
 
@@ -292,6 +373,48 @@ class WPFH_PL_Templates {
 			$rc = absint( $atts['recent_count'] );
 			if ( $rc >= 1 && $rc <= 12 ) {
 				$settings['recent_count'] = $rc;
+			}
+		}
+
+		// Shortcode card overrides
+		if ( ! empty( $atts['card_layout'] ) ) {
+			$cl = sanitize_key( (string) $atts['card_layout'] );
+			if ( array_key_exists( $cl, self::card_layout_options() ) ) {
+				$settings['card_layout'] = $cl;
+			}
+		}
+
+		$ratio_param = ! empty( $atts['card_image_ratio'] ) ? $atts['card_image_ratio'] : ( ! empty( $atts['image_ratio'] ) ? $atts['image_ratio'] : '' );
+		if ( ! empty( $ratio_param ) ) {
+			$ir = sanitize_text_field( (string) $ratio_param );
+			if ( array_key_exists( $ir, self::image_ratio_options() ) ) {
+				$settings['card_image_ratio'] = $ir;
+			}
+		}
+
+		$exc_param = isset( $atts['card_excerpt_length'] ) ? $atts['card_excerpt_length'] : ( isset( $atts['excerpt_length'] ) ? $atts['excerpt_length'] : null );
+		if ( null !== $exc_param && '' !== $exc_param ) {
+			$settings['card_excerpt_length'] = min( 50, max( 0, absint( $exc_param ) ) );
+		}
+
+		$btn_param = ! empty( $atts['card_button_text'] ) ? $atts['card_button_text'] : ( ! empty( $atts['button_text'] ) ? $atts['button_text'] : '' );
+		if ( ! empty( $btn_param ) ) {
+			$settings['card_button_text'] = sanitize_text_field( substr( (string) $btn_param, 0, 50 ) );
+		}
+
+		$elements_param = ! empty( $atts['card_elements'] ) ? $atts['card_elements'] : ( ! empty( $atts['elements'] ) ? $atts['elements'] : '' );
+		if ( ! empty( $elements_param ) ) {
+			$el_list     = array_map( 'trim', explode( ',', $elements_param ) );
+			$valid_els   = array_keys( self::available_card_elements() );
+			$cleaned_els = array();
+			foreach ( $el_list as $el ) {
+				$cel = sanitize_key( $el );
+				if ( in_array( $cel, $valid_els, true ) ) {
+					$cleaned_els[] = $cel;
+				}
+			}
+			if ( ! empty( $cleaned_els ) ) {
+				$settings['card_elements'] = $cleaned_els;
 			}
 		}
 

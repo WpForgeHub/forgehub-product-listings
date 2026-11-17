@@ -693,13 +693,106 @@
 	height: 100%;
 }
 
-/* Card Media */
+/* Horizontal Card Layout */
+.wpfh-pl-card--horizontal .wpfh-pl-card-inner {
+	flex-direction: row;
+	align-items: stretch;
+}
+
+.wpfh-pl-card--horizontal .wpfh-pl-card-media {
+	width: 36%;
+	min-width: 140px;
+	max-width: 220px;
+	aspect-ratio: auto;
+	flex-shrink: 0;
+}
+
+.wpfh-pl-card--horizontal .wpfh-pl-thumb {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.wpfh-pl-card--horizontal .wpfh-pl-card-body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+@media (max-width: 680px) {
+	.wpfh-pl-card--horizontal .wpfh-pl-card-inner {
+		flex-direction: column;
+	}
+	.wpfh-pl-card--horizontal .wpfh-pl-card-media {
+		width: 100%;
+		max-width: 100%;
+		aspect-ratio: 16 / 9;
+	}
+}
+
+/* Compact Card Layout */
+.wpfh-pl-card--compact .wpfh-pl-card-body {
+	padding: 0.85rem 1rem;
+}
+
+.wpfh-pl-card--compact .wpfh-pl-card-title {
+	font-size: 1rem;
+	margin-bottom: 0.35rem;
+}
+
+.wpfh-pl-card--compact .wpfh-pl-card-excerpt {
+	font-size: 0.8125rem;
+	line-height: 1.4;
+	margin-bottom: 0.65rem;
+}
+
+.wpfh-pl-card--compact .wpfh-pl-card-footer {
+	padding-top: 0.5rem;
+}
+
+.wpfh-pl-card--compact .wpfh-pl-btn {
+	padding: 0.4rem 0.75rem;
+	font-size: 0.8125rem;
+}
+
+/* No Thumb & Inline Badge */
+.wpfh-pl-card--no-thumb .wpfh-pl-card-body {
+	padding-top: 1.25rem;
+}
+
+.wpfh-pl-badge-inline {
+	margin-bottom: 0.5rem;
+}
+
+.wpfh-pl-badge-inline .wpfh-pl-badge {
+	position: static;
+	display: inline-block;
+}
+
+/* Card Media & Aspect Ratios */
 .wpfh-pl-card-media {
 	position: relative;
 	display: block;
 	aspect-ratio: 16 / 9;
 	overflow: hidden;
 	background: rgba(255, 255, 255, 0.03);
+}
+
+.wpfh-pl-ratio--16-9 .wpfh-pl-card-media {
+	aspect-ratio: 16 / 9;
+}
+
+.wpfh-pl-ratio--21-9 .wpfh-pl-card-media {
+	aspect-ratio: 21 / 9;
+}
+
+.wpfh-pl-ratio--4-3 .wpfh-pl-card-media {
+	aspect-ratio: 4 / 3;
+}
+
+.wpfh-pl-ratio--1-1 .wpfh-pl-card-media {
+	aspect-ratio: 1 / 1;
 }
 
 .wpfh-pl-thumb {

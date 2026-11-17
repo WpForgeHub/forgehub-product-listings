@@ -4,7 +4,7 @@ Tags: woocommerce, product listing, catalog, templates, shop
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Pick a ready-made layout for your plugin catalog, shop and category pages and as
 
 == Description ==
 
-ForgeHub Product Listings gives you three catalog layouts (Sidebar + Grid, Top Bar + Grid, Category Cards + List) and lets you choose which one is used on the plugins page, the shop page and category pages. Features flexible grid columns (2-5), left/right sidebar positioning, container width control, and modular sidebar widgets (Search, Categories, Recent Products, Price Filter). Use the [forgehub_listing] shortcode to render the assigned template.
+ForgeHub Product Listings gives you three catalog layouts (Sidebar + Grid, Top Bar + Grid, Category Cards + List) and lets you choose which one is used on the plugins page, the shop page and category pages. Features customizable card designs (vertical, horizontal, compact), aspect ratio controls (16:9, 21:9 slim, 4:3, 1:1, hidden), granular element toggles, flexible grid columns (2-5), left/right sidebar positioning, container width control, and modular sidebar widgets (Search, Categories, Recent Products, Price Filter). Use the [forgehub_listing] shortcode to render the assigned template.
 
 == Frequently Asked Questions ==
 
@@ -20,6 +20,15 @@ ForgeHub Product Listings gives you three catalog layouts (Sidebar + Grid, Top B
 Yes, products are read from WooCommerce.
 
 == Changelog ==
+
+= 1.0.2 =
+* Added Product Card Design & Elements customization section in wp-admin settings.
+* Added Card Layout Styles: Vertical (standard), Horizontal (sleek low height with left thumbnail), and Compact.
+* Added Thumbnail Aspect Ratio controls: 16:9, 21:9 (ultra-wide slim banner), 4:3, 1:1, and Hidden.
+* Added granular card element visibility toggles: Thumbnail, Free/Pro Badge, Categories, Title, Excerpt, Price, Action Button.
+* Added Short Description / Excerpt word count control (default 12 words) to prevent overly tall vertical cards.
+* Added customizable Action Button text setting and shortcode parameters.
+* Fixed container width constraint in Full Site Editing page templates so 1400px, 1600px, and Full Width render properly.
 
 = 1.0.1 =
 * Added flexible grid columns setting (2, 3, 4, 5 columns or responsive auto-fit).

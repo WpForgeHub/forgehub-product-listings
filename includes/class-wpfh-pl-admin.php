@@ -71,11 +71,16 @@ class WPFH_PL_Admin {
 		$sw_opts       = WPFH_PL_Templates::sidebar_width_options();
 		$avail_widgets = WPFH_PL_Templates::available_sidebar_widgets();
 		$active_w      = isset( $settings['sidebar_widgets'] ) && is_array( $settings['sidebar_widgets'] ) ? $settings['sidebar_widgets'] : array();
+
+		$card_layouts   = WPFH_PL_Templates::card_layout_options();
+		$image_ratios   = WPFH_PL_Templates::image_ratio_options();
+		$avail_elements = WPFH_PL_Templates::available_card_elements();
+		$active_elems   = isset( $settings['card_elements'] ) && is_array( $settings['card_elements'] ) ? $settings['card_elements'] : array();
 		?>
 		<div class="wrap wpfh-pl-admin-wrap">
 			<h1><?php esc_html_e( 'ForgeHub Product Listings', 'forgehub-product-listings' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'Configure WooCommerce catalog templates, sidebar positions, responsive grid columns, container width, and modular widgets.', 'forgehub-product-listings' ); ?>
+				<?php esc_html_e( 'Configure WooCommerce catalog templates, sidebar positions, responsive grid columns, container width, product card design, and modular widgets.', 'forgehub-product-listings' ); ?>
 			</p>
 
 			<form method="post" action="options.php">
@@ -171,7 +176,83 @@ class WPFH_PL_Admin {
 					</table>
 				</div>
 
-				<!-- Section 3: Modular Sidebar Widgets -->
+				<!-- Section 3: Product Card Design & Elements -->
+				<div class="wpfh-pl-section">
+					<h2 class="wpfh-pl-section-title"><?php esc_html_e( 'Product Card Design & Elements', 'forgehub-product-listings' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Customize product card styling, proportions, image aspect ratio, and choose exactly which elements to show.', 'forgehub-product-listings' ); ?></p>
+
+					<table class="form-table" role="presentation">
+						<tbody>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-card-layout"><?php esc_html_e( 'Card Layout Style', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<select id="wpfh-pl-card-layout" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[card_layout]' ); ?>">
+										<?php foreach ( $card_layouts as $clval => $cllabel ) : ?>
+											<option value="<?php echo esc_attr( $clval ); ?>"<?php selected( $settings['card_layout'], $clval ); ?>>
+												<?php echo esc_html( $cllabel ); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Select vertical, sleek horizontal (image on left), or compact footprint.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-card-ratio"><?php esc_html_e( 'Thumbnail Aspect Ratio', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<select id="wpfh-pl-card-ratio" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[card_image_ratio]' ); ?>">
+										<?php foreach ( $image_ratios as $irval => $irlabel ) : ?>
+											<option value="<?php echo esc_attr( $irval ); ?>"<?php selected( $settings['card_image_ratio'], $irval ); ?>>
+												<?php echo esc_html( $irlabel ); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Use 21:9 or 16:9 for slim modern cards, or select Hidden to eliminate the image completely.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<?php esc_html_e( 'Elements to Display', 'forgehub-product-listings' ); ?>
+								</th>
+								<td>
+									<fieldset class="wpfh-pl-element-checklist">
+										<legend class="screen-reader-text"><?php esc_html_e( 'Card Elements', 'forgehub-product-listings' ); ?></legend>
+										<?php foreach ( $avail_elements as $el_key => $el_label ) : ?>
+											<label class="wpfh-pl-element-item">
+												<input type="checkbox" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[card_elements][]' ); ?>" value="<?php echo esc_attr( $el_key ); ?>"<?php checked( in_array( $el_key, $active_elems, true ) ); ?> />
+												<span><strong><?php echo esc_html( $el_label ); ?></strong></span>
+											</label>
+										<?php endforeach; ?>
+									</fieldset>
+									<p class="description"><?php esc_html_e( 'Select which details should appear on the product card. Uncheck elements to keep cards clean and compact.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-card-excerpt-len"><?php esc_html_e( 'Excerpt Word Count', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<input type="number" id="wpfh-pl-card-excerpt-len" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[card_excerpt_length]' ); ?>" value="<?php echo esc_attr( (string) $settings['card_excerpt_length'] ); ?>" min="0" max="50" step="1" class="small-text" />
+									<p class="description"><?php esc_html_e( 'Maximum words for the product short description. Recommended: 10-14 words to prevent tall vertical cards.', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<label for="wpfh-pl-card-btn-text"><?php esc_html_e( 'Action Button Text', 'forgehub-product-listings' ); ?></label>
+								</th>
+								<td>
+									<input type="text" id="wpfh-pl-card-btn-text" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[card_button_text]' ); ?>" value="<?php echo esc_attr( $settings['card_button_text'] ); ?>" class="regular-text" />
+									<p class="description"><?php esc_html_e( 'Label displayed on the card call-to-action button (e.g. "View Details", "Explore", "Learn More").', 'forgehub-product-listings' ); ?></p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Section 4: Modular Sidebar Widgets -->
 				<div class="wpfh-pl-section">
 					<h2 class="wpfh-pl-section-title"><?php esc_html_e( 'Modular Sidebar Widgets', 'forgehub-product-listings' ); ?></h2>
 					<p class="description"><?php esc_html_e( 'Select which widgets should appear in the template sidebar. Active widgets are displayed in order.', 'forgehub-product-listings' ); ?></p>
@@ -199,6 +280,10 @@ class WPFH_PL_Admin {
 						</tbody>
 					</table>
 				</div>
+
+				<?php submit_button(); ?>
+			</form>
+		</div>
 
 				<?php submit_button(); ?>
 			</form>
