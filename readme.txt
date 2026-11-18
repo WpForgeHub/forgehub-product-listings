@@ -4,7 +4,7 @@ Tags: woocommerce, product listing, catalog, templates, shop
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,11 @@ ForgeHub Product Listings gives you three catalog layouts (Sidebar + Grid, Top B
 Yes, products are read from WooCommerce.
 
 == Changelog ==
+
+= 1.0.3 =
+* Fixed price range filtering (`pl_price` filter brackets) for variable and freemium WooCommerce products so queries like `pl_price=under-20` match correctly.
+* Added min and max price data attributes to product card templates for accurate multi-tier price matching and price sorting.
+* Enhanced card edition logic to support `all` for variable products with both Free and Pro options.
 
 = 1.0.2 =
 * Added Product Card Design & Elements customization section in wp-admin settings.

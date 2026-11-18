@@ -22,7 +22,15 @@ $wpfh_pl_title      = $wpfh_pl_card_product->get_name();
 $wpfh_pl_permalink  = $wpfh_pl_card_product->get_permalink();
 $wpfh_pl_image_id   = $wpfh_pl_card_product->get_image_id();
 $wpfh_pl_price_html = $wpfh_pl_card_product->get_price_html();
-$wpfh_pl_raw_price  = (float) $wpfh_pl_card_product->get_price();
+
+if ( $wpfh_pl_card_product->is_type( 'variable' ) ) {
+	$wpfh_pl_min_price = (float) $wpfh_pl_card_product->get_variation_price( 'min', true );
+	$wpfh_pl_max_price = (float) $wpfh_pl_card_product->get_variation_price( 'max', true );
+} else {
+	$wpfh_pl_min_price = (float) $wpfh_pl_card_product->get_price();
+	$wpfh_pl_max_price = $wpfh_pl_min_price;
+}
+$wpfh_pl_raw_price = $wpfh_pl_max_price > 0.0 ? $wpfh_pl_max_price : $wpfh_pl_min_price;
 
 // Retrieve layout & card design configuration
 $wpfh_pl_layout      = isset( $wpfh_pl_layout ) && is_array( $wpfh_pl_layout ) ? $wpfh_pl_layout : WPFH_PL_Templates::get_settings();
@@ -46,10 +54,24 @@ if ( $wpfh_pl_show_exc && $wpfh_pl_exc_len > 0 ) {
 }
 
 // Determine edition: Free, Pro, or Variable with Free/Pro options
-$wpfh_pl_slug    = $wpfh_pl_card_product->get_slug();
-$wpfh_pl_is_pro  = ( substr( $wpfh_pl_slug, -4 ) === '-pro' );
-$wpfh_pl_is_free = ( 0.0 === $wpfh_pl_raw_price || ! $wpfh_pl_card_product->get_price() );
-$wpfh_pl_edition = $wpfh_pl_is_pro ? 'pro' : ( $wpfh_pl_is_free ? 'free' : 'all' );
+$wpfh_pl_slug        = $wpfh_pl_card_product->get_slug();
+$wpfh_pl_is_pro      = ( substr( $wpfh_pl_slug, -4 ) === '-pro' );
+$wpfh_pl_has_free    = ( 0.0 === $wpfh_pl_min_price );
+$wpfh_pl_has_paid    = ( $wpfh_pl_max_price > 0.0 );
+
+if ( $wpfh_pl_is_pro ) {
+	$wpfh_pl_edition     = 'pro';
+	$wpfh_pl_badge_label = __( 'Pro', 'forgehub-product-listings' );
+} elseif ( $wpfh_pl_has_free && $wpfh_pl_has_paid ) {
+	$wpfh_pl_edition     = 'all';
+	$wpfh_pl_badge_label = __( 'Free / Pro', 'forgehub-product-listings' );
+} elseif ( $wpfh_pl_has_free ) {
+	$wpfh_pl_edition     = 'free';
+	$wpfh_pl_badge_label = __( 'Free', 'forgehub-product-listings' );
+} else {
+	$wpfh_pl_edition     = 'pro';
+	$wpfh_pl_badge_label = __( 'Pro', 'forgehub-product-listings' );
+}
 
 // Get categories
 $wpfh_pl_terms     = get_the_terms( $wpfh_pl_prod_id, 'product_cat' );
@@ -84,6 +106,8 @@ if ( ! $wpfh_pl_show_img ) {
 	data-title="<?php echo esc_attr( strtolower( $wpfh_pl_title ) ); ?>"
 	data-edition="<?php echo esc_attr( $wpfh_pl_edition ); ?>"
 	data-price="<?php echo esc_attr( (string) $wpfh_pl_raw_price ); ?>"
+	data-min-price="<?php echo esc_attr( (string) $wpfh_pl_min_price ); ?>"
+	data-max-price="<?php echo esc_attr( (string) $wpfh_pl_max_price ); ?>"
 	data-cats="<?php echo esc_attr( $wpfh_pl_cats_attr ); ?>">
 	<div class="wpfh-pl-card-inner">
 		<?php if ( $wpfh_pl_show_img ) : ?>
@@ -97,7 +121,7 @@ if ( ! $wpfh_pl_show_img ) {
 				<?php endif; ?>
 				<?php if ( $wpfh_pl_show_badge ) : ?>
 					<span class="wpfh-pl-badge wpfh-pl-badge--<?php echo esc_attr( $wpfh_pl_edition ); ?>">
-						<?php echo $wpfh_pl_is_pro ? esc_html__( 'Pro', 'forgehub-product-listings' ) : esc_html__( 'Free', 'forgehub-product-listings' ); ?>
+						<?php echo esc_html( $wpfh_pl_badge_label ); ?>
 					</span>
 				<?php endif; ?>
 			</a>
@@ -106,7 +130,7 @@ if ( ! $wpfh_pl_show_img ) {
 			<?php if ( ! $wpfh_pl_show_img && $wpfh_pl_show_badge ) : ?>
 				<div class="wpfh-pl-badge-inline">
 					<span class="wpfh-pl-badge wpfh-pl-badge--<?php echo esc_attr( $wpfh_pl_edition ); ?>">
-						<?php echo $wpfh_pl_is_pro ? esc_html__( 'Pro', 'forgehub-product-listings' ) : esc_html__( 'Free', 'forgehub-product-listings' ); ?>
+						<?php echo esc_html( $wpfh_pl_badge_label ); ?>
 					</span>
 				</div>
 			<?php endif; ?>

@@ -118,6 +118,8 @@
 				var cats = (card.dataset.cats || '').split(' ');
 				var edition = card.dataset.edition || 'all';
 				var cardPrice = parseFloat(card.dataset.price) || 0;
+				var minPrice = parseFloat(card.dataset.minPrice !== undefined ? card.dataset.minPrice : card.dataset.price) || 0;
+				var maxPrice = parseFloat(card.dataset.maxPrice !== undefined ? card.dataset.maxPrice : card.dataset.price) || 0;
 
 				var matchesSearch = !query || title.indexOf(query) !== -1 || excerpt.indexOf(query) !== -1;
 				var matchesCat = state.category === 'all' || cats.indexOf(state.category) !== -1;
@@ -126,13 +128,15 @@
 				var matchesPrice = true;
 				if (state.priceRange && state.priceRange !== 'all') {
 					if (state.priceRange === 'free') {
-						matchesPrice = (cardPrice === 0);
+						matchesPrice = (minPrice === 0);
 					} else if (state.priceRange === 'under-20') {
-						matchesPrice = (cardPrice > 0 && cardPrice <= 20);
+						// Cheapest option (free included) is at or below $20.
+						matchesPrice = (minPrice <= 20);
 					} else if (state.priceRange === '20-50') {
-						matchesPrice = (cardPrice > 20 && cardPrice <= 50);
+						// Price span overlaps the 20-50 bracket.
+						matchesPrice = (minPrice <= 50 && maxPrice >= 20);
 					} else if (state.priceRange === '50-plus') {
-						matchesPrice = (cardPrice > 50);
+						matchesPrice = (maxPrice >= 50);
 					}
 				}
 
