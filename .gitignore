@@ -1,0 +1,18 @@
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+vendor/
+dist/
+build/
+.vscode/
+.idea/
+*.zip
+
+# Private QA & Test Harness Guard
+tests/
+reports/
+*.py
+*.html
+.env
+credentials*
