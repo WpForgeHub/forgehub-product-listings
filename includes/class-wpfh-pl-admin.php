@@ -85,6 +85,7 @@ class WPFH_PL_Admin {
 
 			<form method="post" action="options.php">
 				<?php settings_fields( 'wpfh_pl_group' ); ?>
+				<input type="hidden" name="<?php echo esc_attr( WPFH_PL_Templates::SETTINGS_OPTION . '[_submitted]' ); ?>" value="1" />
 
 				<!-- Section 1: Template Selection -->
 				<div class="wpfh-pl-section">
@@ -280,10 +281,6 @@ class WPFH_PL_Admin {
 						</tbody>
 					</table>
 				</div>
-
-				<?php submit_button(); ?>
-			</form>
-		</div>
 
 				<?php submit_button(); ?>
 			</form>

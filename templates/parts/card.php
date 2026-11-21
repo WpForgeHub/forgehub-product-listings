@@ -86,11 +86,11 @@ if ( $wpfh_pl_show_exc && $wpfh_pl_exc_len > 0 ) {
 	$wpfh_pl_short_desc = wp_trim_words( $wpfh_pl_short_desc, $wpfh_pl_exc_len, '...' );
 }
 
-// Determine edition: Free, Pro, or Variable with Free/Pro options
-$wpfh_pl_slug        = $wpfh_pl_card_product->get_slug();
-$wpfh_pl_is_pro      = ( substr( $wpfh_pl_slug, -4 ) === '-pro' );
-$wpfh_pl_has_free    = ( 0.0 === $wpfh_pl_min_price );
-$wpfh_pl_has_paid    = ( $wpfh_pl_max_price > 0.0 );
+// Determine edition: Free, Pro, or Variable with Free/Paid options.
+$wpfh_pl_slug     = $wpfh_pl_card_product->get_slug();
+$wpfh_pl_is_pro   = ( substr( $wpfh_pl_slug, -4 ) === '-pro' );
+$wpfh_pl_has_free = ( 0.0 === $wpfh_pl_min_price );
+$wpfh_pl_has_paid = ( $wpfh_pl_max_price > 0.0 );
 
 if ( $wpfh_pl_is_pro ) {
 	$wpfh_pl_edition     = 'pro';
@@ -101,12 +101,16 @@ if ( $wpfh_pl_is_pro ) {
 } elseif ( $wpfh_pl_has_free ) {
 	$wpfh_pl_edition     = 'free';
 	$wpfh_pl_badge_label = __( 'Free', 'forgehub-product-listings' );
+} elseif ( $wpfh_pl_card_product->is_on_sale() ) {
+	$wpfh_pl_edition     = 'pro';
+	$wpfh_pl_badge_label = __( 'Sale', 'forgehub-product-listings' );
 } else {
 	$wpfh_pl_edition     = 'pro';
-	$wpfh_pl_badge_label = __( 'Pro', 'forgehub-product-listings' );
+	$wpfh_pl_badge_label = '';
 }
+$wpfh_pl_badge_label = apply_filters( 'wpfh_pl_card_badge_label', $wpfh_pl_badge_label, $wpfh_pl_card_product, $wpfh_pl_edition );
 
-// Get categories
+// Get categories (never inject store-specific fallback tags on uncategorized products).
 $wpfh_pl_terms     = get_the_terms( $wpfh_pl_prod_id, 'product_cat' );
 $wpfh_pl_cat_slugs = array();
 $wpfh_pl_cat_names = array();
@@ -117,10 +121,6 @@ if ( ! empty( $wpfh_pl_terms ) && ! is_wp_error( $wpfh_pl_terms ) ) {
 			$wpfh_pl_cat_names[] = $wpfh_pl_term->name;
 		}
 	}
-}
-if ( empty( $wpfh_pl_cat_names ) ) {
-	$wpfh_pl_cat_names[] = __( 'Micro Plugin', 'forgehub-product-listings' );
-	$wpfh_pl_cat_slugs[] = 'micro-plugin';
 }
 
 $wpfh_pl_cats_attr = implode( ' ', $wpfh_pl_cat_slugs );
@@ -152,7 +152,7 @@ if ( ! $wpfh_pl_show_img ) {
 						<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
 					</div>
 				<?php endif; ?>
-				<?php if ( $wpfh_pl_show_badge ) : ?>
+				<?php if ( $wpfh_pl_show_badge && '' !== $wpfh_pl_badge_label ) : ?>
 					<span class="wpfh-pl-badge wpfh-pl-badge--<?php echo esc_attr( $wpfh_pl_edition ); ?>">
 						<?php echo esc_html( $wpfh_pl_badge_label ); ?>
 					</span>
@@ -160,7 +160,7 @@ if ( ! $wpfh_pl_show_img ) {
 			</a>
 		<?php endif; ?>
 		<div class="wpfh-pl-card-body">
-			<?php if ( ! $wpfh_pl_show_img && $wpfh_pl_show_badge ) : ?>
+			<?php if ( ! $wpfh_pl_show_img && $wpfh_pl_show_badge && '' !== $wpfh_pl_badge_label ) : ?>
 				<div class="wpfh-pl-badge-inline">
 					<span class="wpfh-pl-badge wpfh-pl-badge--<?php echo esc_attr( $wpfh_pl_edition ); ?>">
 						<?php echo esc_html( $wpfh_pl_badge_label ); ?>

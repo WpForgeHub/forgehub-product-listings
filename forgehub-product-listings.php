@@ -101,3 +101,9 @@ function wpfh_pl_action_links( $links ) {
 
 WPFH_PL_Admin::init();
 WPFH_PL_Frontend::init();
+
+add_action( 'admin_notices', function() {
+	if ( ! class_exists( 'WooCommerce' ) && current_user_can( 'activate_plugins' ) ) {
+		echo '<div class="notice notice-warning is-dismissible"><p><strong>' . esc_html__( 'ForgeHub Product Listings:', 'forgehub-product-listings' ) . '</strong> ' . esc_html__( 'WooCommerce is required to display product listings. Please install and activate WooCommerce.', 'forgehub-product-listings' ) . '</p></div>';
+	}
+} );

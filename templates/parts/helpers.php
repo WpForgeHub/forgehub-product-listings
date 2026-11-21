@@ -26,10 +26,11 @@ if ( ! function_exists( 'wpfh_pl_get_product_categories' ) ) {
 				}
 				if ( ! isset( $categories[ $t->slug ] ) ) {
 					$categories[ $t->slug ] = array(
-						'term_id' => $t->term_id,
-						'name'    => $t->name,
-						'slug'    => $t->slug,
-						'count'   => 0,
+						'term_id'     => $t->term_id,
+						'name'        => $t->name,
+						'slug'        => $t->slug,
+						'description' => $t->description,
+						'count'       => 0,
 					);
 				}
 				$categories[ $t->slug ]['count']++;
@@ -89,6 +90,11 @@ if ( ! function_exists( 'wpfh_pl_allowed_svg_tags' ) ) {
 				'stroke' => true,
 			),
 			'polyline' => array(
+				'points' => true,
+				'fill'   => true,
+				'stroke' => true,
+			),
+			'polygon'  => array(
 				'points' => true,
 				'fill'   => true,
 				'stroke' => true,

@@ -34,7 +34,7 @@ class WPFH_PL_Templates {
 	 */
 	public static function contexts() {
 		return array(
-			'plugins'  => __( 'Plugins page (/plugins/)', 'forgehub-product-listings' ),
+			'plugins'  => __( 'Catalog / Shortcode pages', 'forgehub-product-listings' ),
 			'shop'     => __( 'Shop page', 'forgehub-product-listings' ),
 			'category' => __( 'Product category pages', 'forgehub-product-listings' ),
 		);
@@ -265,7 +265,7 @@ class WPFH_PL_Templates {
 		$raw_sw     = isset( $input['sidebar_width'] ) ? sanitize_text_field( (string) $input['sidebar_width'] ) : $defaults['sidebar_width'];
 		$out['sidebar_width'] = in_array( $raw_sw, $sw_allowed, true ) ? $raw_sw : $defaults['sidebar_width'];
 
-		// Sidebar widgets
+		// Sidebar widgets — allow saving an empty array when the form was explicitly submitted.
 		$valid_widgets = array_keys( self::available_sidebar_widgets() );
 		$out_widgets   = array();
 		if ( isset( $input['sidebar_widgets'] ) && is_array( $input['sidebar_widgets'] ) ) {
@@ -276,8 +276,8 @@ class WPFH_PL_Templates {
 				}
 			}
 		}
-		// If empty, fall back to defaults
-		$out['sidebar_widgets'] = ! empty( $out_widgets ) ? $out_widgets : $defaults['sidebar_widgets'];
+		$form_submitted         = ! empty( $input['_submitted'] );
+		$out['sidebar_widgets'] = ( ! empty( $out_widgets ) || $form_submitted ) ? $out_widgets : $defaults['sidebar_widgets'];
 
 		// Recent count
 		$raw_rc = isset( $input['recent_count'] ) ? absint( $input['recent_count'] ) : $defaults['recent_count'];
@@ -301,7 +301,7 @@ class WPFH_PL_Templates {
 		$raw_btn = isset( $input['card_button_text'] ) ? sanitize_text_field( (string) $input['card_button_text'] ) : $defaults['card_button_text'];
 		$out['card_button_text'] = ! empty( $raw_btn ) ? substr( $raw_btn, 0, 50 ) : $defaults['card_button_text'];
 
-		// Card elements checklist
+		// Card elements checklist — allow saving an empty array when explicitly submitted.
 		$valid_elements = array_keys( self::available_card_elements() );
 		$out_elements   = array();
 		if ( isset( $input['card_elements'] ) && is_array( $input['card_elements'] ) ) {
@@ -312,7 +312,7 @@ class WPFH_PL_Templates {
 				}
 			}
 		}
-		$out['card_elements'] = ! empty( $out_elements ) ? $out_elements : $defaults['card_elements'];
+		$out['card_elements'] = ( ! empty( $out_elements ) || $form_submitted ) ? $out_elements : $defaults['card_elements'];
 
 		return $out;
 	}

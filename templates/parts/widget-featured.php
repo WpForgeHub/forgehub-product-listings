@@ -35,7 +35,7 @@ if ( empty( $wpfh_pl_feat_query ) ) {
 <div class="wpfh-pl-widget wpfh-pl-widget-featured">
 	<h3 class="wpfh-pl-widget-title">
 		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-		<?php esc_html_e( 'Featured Plugins', 'forgehub-product-listings' ); ?>
+		<?php esc_html_e( 'Featured Products', 'forgehub-product-listings' ); ?>
 	</h3>
 	<ul class="wpfh-pl-recent-list">
 		<?php

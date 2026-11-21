@@ -56,16 +56,18 @@ class WPFH_PL_Frontend {
 		if ( is_admin() ) {
 			return false;
 		}
+		$enqueue = false;
 		if ( function_exists( 'is_shop' ) && is_shop() ) {
-			return true;
+			$enqueue = true;
+		} elseif ( function_exists( 'is_product_category' ) && is_product_category() ) {
+			$enqueue = true;
+		} else {
+			global $post;
+			if ( $post instanceof WP_Post && ( has_shortcode( $post->post_content, 'wpfh_product_listing' ) || has_shortcode( $post->post_content, 'forgehub_listing' ) ) ) {
+				$enqueue = true;
+			}
 		}
-		if ( function_exists( 'is_product_category' ) && is_product_category() ) {
-			return true;
-		}
-		if ( is_page( 'plugins' ) ) {
-			return true;
-		}
-		return false;
+		return (bool) apply_filters( 'wpfh_pl_should_enqueue', $enqueue );
 	}
 
 	/**
@@ -95,9 +97,9 @@ class WPFH_PL_Frontend {
 
 		$atts = shortcode_atts(
 			array(
-				'template'         => '',
-				'limit'            => 100,
-				'category'         => '',
+				'template'            => '',
+				'limit'               => -1,
+				'category'            => '',
 				'columns'             => '',
 				'sidebar_position'    => '',
 				'container_width'     => '',
@@ -161,16 +163,34 @@ class WPFH_PL_Frontend {
 			return;
 		}
 
-		// Optional filter to enable full archive loop replacement
-		if ( apply_filters( 'wpfh_pl_enable_archive_override', false ) ) {
-			if ( ( function_exists( 'is_shop' ) && is_shop() ) || ( function_exists( 'is_product_category' ) && is_product_category() ) ) {
-				// Prevent standard WC product loop, render template via filter
-				add_filter( 'template_include', array( __CLASS__, 'override_template_file' ), 99 );
-			}
+		if ( ! apply_filters( 'wpfh_pl_enable_archive_override', false ) ) {
+			return;
+		}
+
+		$is_shop = function_exists( 'is_shop' ) && is_shop();
+		$is_cat  = function_exists( 'is_product_category' ) && is_product_category();
+
+		if ( $is_shop || $is_cat ) {
+			remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
+			remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+			add_action( 'woocommerce_before_shop_loop', array( __CLASS__, 'render_archive_listing' ), 5 );
+			add_filter( 'woocommerce_product_loop_start', '__return_empty_string', 999 );
+			add_filter( 'woocommerce_product_loop_end', '__return_empty_string', 999 );
 		}
 	}
 
-	public static function override_template_file( $template ) {
-		return $template;
+	/**
+	 * Renders the assigned listing template on WooCommerce shop/category archives.
+	 */
+	public static function render_archive_listing() {
+		$atts = array();
+		if ( function_exists( 'is_product_category' ) && is_product_category() ) {
+			$term = get_queried_object();
+			if ( $term instanceof WP_Term ) {
+				$atts['category'] = $term->slug;
+			}
+		}
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- shortcode output is escaped within templates.
+		echo self::render_shortcode( $atts );
 	}
 }

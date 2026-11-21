@@ -127,13 +127,24 @@
 
 				var matchesPrice = true;
 				if (state.priceRange && state.priceRange !== 'all') {
-					if (state.priceRange === 'free') {
+					var activePriceBtn = wrapper.querySelector('.wpfh-pl-price-btn[data-price-range="' + state.priceRange + '"]');
+					if (activePriceBtn && (activePriceBtn.dataset.min !== undefined || activePriceBtn.dataset.max !== undefined)) {
+						var bMin = activePriceBtn.dataset.min !== '' ? parseFloat(activePriceBtn.dataset.min) : null;
+						var bMax = activePriceBtn.dataset.max !== '' ? parseFloat(activePriceBtn.dataset.max) : null;
+						if (bMin === 0 && bMax === 0) {
+							matchesPrice = (minPrice === 0);
+						} else if (bMin !== null && bMax !== null) {
+							matchesPrice = (minPrice <= bMax && maxPrice >= bMin);
+						} else if (bMin !== null) {
+							matchesPrice = (maxPrice >= bMin);
+						} else if (bMax !== null) {
+							matchesPrice = (minPrice <= bMax);
+						}
+					} else if (state.priceRange === 'free') {
 						matchesPrice = (minPrice === 0);
 					} else if (state.priceRange === 'under-20') {
-						// Cheapest option (free included) is at or below $20.
 						matchesPrice = (minPrice <= 20);
 					} else if (state.priceRange === '20-50') {
-						// Price span overlaps the 20-50 bracket.
 						matchesPrice = (minPrice <= 50 && maxPrice >= 20);
 					} else if (state.priceRange === '50-plus') {
 						matchesPrice = (maxPrice >= 50);
@@ -179,7 +190,9 @@
 
 			// Status bar text
 			if (countLabel) {
-				countLabel.textContent = visibleCount + ' ' + (visibleCount === 1 ? 'plugin found' : 'plugins found');
+				var singular = wrapper.dataset.itemSingular || 'product found';
+				var plural   = wrapper.dataset.itemPlural || 'products found';
+				countLabel.textContent = visibleCount + ' ' + (visibleCount === 1 ? singular : plural);
 			}
 
 			// Reset filters button
