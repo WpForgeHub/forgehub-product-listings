@@ -30,7 +30,40 @@ if ( $wpfh_pl_card_product->is_type( 'variable' ) ) {
 	$wpfh_pl_min_price = (float) $wpfh_pl_card_product->get_price();
 	$wpfh_pl_max_price = $wpfh_pl_min_price;
 }
-$wpfh_pl_raw_price = $wpfh_pl_max_price > 0.0 ? $wpfh_pl_max_price : $wpfh_pl_min_price;
+
+/**
+ * Filter the min/max price bounds used for card data attributes and price-range filtering.
+ *
+ * @param array      $bounds  Associative array with 'min' and 'max' floats.
+ * @param WC_Product $product The WooCommerce product object.
+ */
+$wpfh_pl_price_bounds = apply_filters(
+	'wpfh_pl_card_price_bounds',
+	array(
+		'min' => $wpfh_pl_min_price,
+		'max' => $wpfh_pl_max_price,
+	),
+	$wpfh_pl_card_product
+);
+if ( is_array( $wpfh_pl_price_bounds ) ) {
+	if ( isset( $wpfh_pl_price_bounds['min'] ) && is_numeric( $wpfh_pl_price_bounds['min'] ) ) {
+		$wpfh_pl_min_price = (float) $wpfh_pl_price_bounds['min'];
+	}
+	if ( isset( $wpfh_pl_price_bounds['max'] ) && is_numeric( $wpfh_pl_price_bounds['max'] ) ) {
+		$wpfh_pl_max_price = (float) $wpfh_pl_price_bounds['max'];
+	}
+}
+
+/**
+ * Filter the formatted price HTML displayed on the product listing card.
+ *
+ * @param string     $price_html Formatted price HTML.
+ * @param WC_Product $product    The WooCommerce product object.
+ * @param float      $min_price  Effective minimum price.
+ * @param float      $max_price  Effective maximum price.
+ */
+$wpfh_pl_price_html = apply_filters( 'wpfh_pl_card_price_html', $wpfh_pl_price_html, $wpfh_pl_card_product, $wpfh_pl_min_price, $wpfh_pl_max_price );
+$wpfh_pl_raw_price  = $wpfh_pl_max_price > 0.0 ? $wpfh_pl_max_price : $wpfh_pl_min_price;
 
 // Retrieve layout & card design configuration
 $wpfh_pl_layout      = isset( $wpfh_pl_layout ) && is_array( $wpfh_pl_layout ) ? $wpfh_pl_layout : WPFH_PL_Templates::get_settings();
