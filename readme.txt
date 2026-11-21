@@ -4,7 +4,7 @@ Tags: woocommerce, product listing, catalog, templates, shop
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,9 @@ ForgeHub Product Listings gives you three catalog layouts (Sidebar + Grid, Top B
 Yes, products are read from WooCommerce.
 
 == Changelog ==
+
+= 1.0.4 =
+* Fix duplicate admin form close, remove hardcoded WPForgeHub copy/slugs, dynamic currency symbol & price bounds, WooCommerce guard & uninstall cleanup
 
 = 1.0.3 =
 * Fixed price range filtering (`pl_price` filter brackets) for variable and freemium WooCommerce products so queries like `pl_price=under-20` match correctly.

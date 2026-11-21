@@ -3,7 +3,7 @@
  * Plugin Name:       ForgeHub Product Listings
  * Plugin URI:        https://wpforgehub.com/plugins/forgehub-product-listings/
  * Description:       Choose a ready-made layout for your plugin catalog, shop and category pages, and assign a template per page.
- * Version:           1.0.3
+ * Version:           1.0.4
  * Author:            WPForgeHub
  * Author URI:        https://wpforgehub.com
  * License:           GPLv2 or later
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WPFH_PL_VERSION', '1.0.3' );
+define( 'WPFH_PL_VERSION', '1.0.4' );
 define( 'WPFH_PL_FILE', __FILE__ );
 define( 'WPFH_PL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPFH_PL_URL', plugin_dir_url( __FILE__ ) );
