@@ -50,11 +50,27 @@
 
 ---
 
+## 📸 Admin Preview
+
+<p align="center">
+  <img src="assets/screenshot-1.png" alt="ForgeHub Product Listings WordPress Admin Settings" width="100%" />
+</p>
+
+---
+
 ## 🔧 Installation
 
 1. Upload the `forgehub-product-listings` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Configure your preferred catalog template via **Settings &rarr; Product Listings** or embed using the `[forgehub_listing]` shortcode.
+
+---
+
+## 🔗 Links & Resources
+
+- **Plugin Page:** [https://wpforgehub.com/product/product-listings/](https://wpforgehub.com/product/product-listings/)
+- **Documentation & Help:** [wpforgehub.com/docs](https://wpforgehub.com/docs/)
+- **More Free WordPress Plugins:** [wpforgehub.com](https://wpforgehub.com/#products)
 
 ---
 
