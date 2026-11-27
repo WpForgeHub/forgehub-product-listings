@@ -50,6 +50,8 @@ if ( ! function_exists( 'wpfh_pl_fs' ) ) {
 						),
 					),
 				) );
+				// Freemius forbids uninstall.php in premium builds; use its after_uninstall hook there.
+				$wpfh_pl_fs->add_action( 'after_uninstall', 'wpfh_pl_uninstall_cleanup' );
 			} else {
 				// Clean fallback for standard WordPress distribution
 				$wpfh_pl_fs = new class {
@@ -74,6 +76,20 @@ if ( ! function_exists( 'wpfh_pl_fs' ) ) {
 
 	// Init Freemius.
 	wpfh_pl_fs();
+}
+
+/**
+ * Removes plugin options and termmeta (Freemius premium build; free build uses uninstall.php).
+ */
+function wpfh_pl_uninstall_cleanup() {
+	delete_option( 'wpfh_pl_settings' );
+	delete_option( 'wpfh_pl_assignments' );
+
+	global $wpdb;
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall cleanup.
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%wpfh_pl_%'" );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall cleanup.
+	$wpdb->query( "DELETE FROM {$wpdb->termmeta} WHERE meta_key LIKE 'wpfh_pl_%'" );
 }
 
 require_once WPFH_PL_PATH . 'includes/class-wpfh-pl-templates.php';
